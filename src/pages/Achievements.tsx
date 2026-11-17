@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastProvider'
 import type { Achievement } from '../lib/database.types'
 import Avatar from '../components/Avatar'
 import PageTitle from '../components/PageTitle'
+import { fx } from '../lib/fx'
 
 export default function Achievements() {
   const { members, achievements, setUnlocks, loading } = useCrew()
@@ -29,6 +30,7 @@ export default function Achievements() {
       else {
         setUnlocks((u) => (u.some((x) => x.user_id === me && x.achievement_id === a.id) ? u : [...u, data]))
         toast.show('passed', 'ERFOLG FREIGESCHALTET', `${a.icon ?? '⭐'} ${a.title} · +${a.points} P`)
+        fx.emit({ type: 'confetti', amount: 120 })
         const { error: evErr } = await supabase
           .from('progress_events')
           .insert({ user_id: me, kind: 'achievement', title: `Erfolg: ${a.title}`.slice(0, 120), details: { achievement_id: a.id, points: a.points } })

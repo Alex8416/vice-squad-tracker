@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import type { LeaderboardRow } from '../lib/database.types'
 import { useToast } from '../context/ToastProvider'
 import { useRealtime } from '../hooks/useRealtime'
+import { useFlip } from '../hooks/useFlip'
+import { sfx } from '../lib/sound'
 import { formatHours, formatMoney, formatPercent } from '../lib/format'
 import Avatar from '../components/Avatar'
 import PageTitle from '../components/PageTitle'
@@ -41,6 +43,29 @@ export default function Leaderboard() {
   useRealtime('user_achievements', () => void load())
 
   const sorted = [...rows].sort((a, b) => Number(b[sort]) - Number(a[sort]))
+  const order = sorted.map((r) => r.id)
+  const flipRef = useFlip(order)
+
+  // Live-Rangwechsel erkennen (nicht beim Umsortieren): Pfeil ▲/▼ kurz anzeigen
+  const prev = useRef<{ sort: SortKey; ranks: Map<string, number> } | null>(null)
+  const [moves, setMoves] = useState<{ n: number; delta: Record<string, number> }>({ n: 0, delta: {} })
+  const orderKey = order.join('|')
+  useEffect(() => {
+    const ranks = new Map(orderKey.split('|').map((id, i) => [id, i]))
+    const p = prev.current
+    if (p && p.sort === sort) {
+      const delta: Record<string, number> = {}
+      ranks.forEach((r, id) => {
+        const before = p.ranks.get(id)
+        if (before !== undefined && before !== r) delta[id] = before - r
+      })
+      if (Object.keys(delta).length) {
+        setMoves((m) => ({ n: m.n + 1, delta }))
+        if (Object.values(delta).some((d) => d > 0)) sfx.ping()
+      }
+    }
+    prev.current = { sort, ranks }
+  }, [orderKey, sort])
 
   return (
     <section>
@@ -56,12 +81,13 @@ export default function Leaderboard() {
       {loading ? (
         <p className="text-white/60">Lade Ranking …</p>
       ) : (
-        <ol key={sort} className="space-y-3">
+        <ol className="space-y-3">
           {sorted.map((r, i) => {
             const pod = podium[i]
             return (
               <li
                 key={r.id}
+                ref={flipRef(r.id)}
                 className={`glass stagger-in flex items-center gap-3 border-2 p-3 ${pod ? `podium-shine ${pod.cls}` : 'border-transparent'}`}
                 style={{ ['--i' as string]: i }}
               >
@@ -75,6 +101,14 @@ export default function Leaderboard() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">
                     {pod?.label} {r.username}
+                    {moves.delta[r.id] !== undefined && (
+                      <span
+                        key={moves.n}
+                        className={`rank-badge ml-2 inline-block text-xs font-bold ${moves.delta[r.id]! > 0 ? 'text-[#7dffb0]' : 'text-pink'}`}
+                      >
+                        {moves.delta[r.id]! > 0 ? `▲ ${moves.delta[r.id]}` : `▼ ${-moves.delta[r.id]!}`}
+                      </span>
+                    )}
                   </p>
                   <p className="truncate text-xs text-white/60">
                     {r.crew_role || 'Rookie'} · {r.missions_done} Missionen · 💀 {r.wasted_count} · 🚔 {r.busted_count}

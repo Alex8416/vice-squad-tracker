@@ -128,10 +128,10 @@ body {
 .toast-in { animation: toast-in 0.25s ease-out; }
 
 @keyframes sun-pulse {
-  0%, 100% { filter: drop-shadow(0 0 30px #ff8a3daa); }
-  50% { filter: drop-shadow(0 0 60px #ff2e88cc); }
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
 }
-.sun-pulse { animation: sun-pulse 6s ease-in-out infinite; }
+.sun-pulse { transform-box: fill-box; transform-origin: center; animation: sun-pulse 6s ease-in-out infinite; }
 
 /* ===================== Animationen (eigener Vice-Stil) ===================== */
 
@@ -311,3 +311,146 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ===================== Effekte, Runde 2 ===================== */
+
+/* Glitch: RGB-Versatz und zerhackte Streifen (Text braucht data-text) */
+.glitch { position: relative; display: inline-block; }
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch::before { color: #00e5d4; transform: translate(-3px, 0); mix-blend-mode: screen; animation: glitch-a 2.2s steps(1) infinite; }
+.glitch::after { color: #ff2e88; transform: translate(3px, 0); mix-blend-mode: screen; animation: glitch-b 1.7s steps(1) infinite; }
+@keyframes glitch-a {
+  0%, 100% { clip-path: inset(0 0 100% 0); }
+  10% { clip-path: inset(10% 0 60% 0); transform: translate(-6px, 1px); }
+  14% { clip-path: inset(50% 0 30% 0); transform: translate(5px, -1px); }
+  18% { clip-path: inset(0 0 100% 0); }
+  60% { clip-path: inset(70% 0 5% 0); transform: translate(-4px, 0); }
+  63% { clip-path: inset(0 0 100% 0); }
+}
+@keyframes glitch-b {
+  0%, 100% { clip-path: inset(100% 0 0 0); }
+  20% { clip-path: inset(30% 0 45% 0); transform: translate(6px, 0); }
+  24% { clip-path: inset(80% 0 2% 0); transform: translate(-5px, 1px); }
+  28% { clip-path: inset(100% 0 0 0); }
+  75% { clip-path: inset(5% 0 80% 0); transform: translate(4px, -1px); }
+  78% { clip-path: inset(100% 0 0 0); }
+}
+@keyframes glitch-jitter {
+  0%, 92%, 100% { transform: none; }
+  93% { transform: translate(-2px, 1px) skewX(-6deg); }
+  95% { transform: translate(3px, -1px) skewX(4deg); }
+  97% { transform: translate(-1px, 0); }
+}
+.glitch-jitter { animation: glitch-jitter 2.4s linear infinite; }
+
+/* Bildschirmwackeln */
+@keyframes screen-shake {
+  0%, 100% { transform: none; }
+  15% { transform: translate(-8px, 4px) rotate(-0.6deg); }
+  30% { transform: translate(7px, -5px) rotate(0.5deg); }
+  45% { transform: translate(-5px, 3px); }
+  60% { transform: translate(4px, -2px); }
+  80% { transform: translate(-2px, 1px); }
+}
+body.screen-shake #root { animation: screen-shake 0.6s ease-out; }
+
+/* Blaulicht am Bildschirmrand (5 Sterne) */
+@keyframes police-lights {
+  0%, 20%, 40%, 60%, 80% { box-shadow: inset 0 0 90px 18px #ff1f3d; }
+  10%, 30%, 50%, 70%, 90% { box-shadow: inset 0 0 90px 18px #2f6bff; }
+  100% { box-shadow: inset 0 0 0 0 transparent; }
+}
+.police-lights { animation: police-lights 2.6s linear forwards; }
+
+/* Handy wird hochgenommen (Crew-Karten) */
+@keyframes phone-in {
+  0% { opacity: 0; transform: perspective(900px) translateY(90px) rotateX(55deg) scale(0.85); }
+  60% { opacity: 1; transform: perspective(900px) translateY(-6px) rotateX(-6deg) scale(1.01); }
+  100% { opacity: 1; transform: none; }
+}
+.phone-in {
+  animation: phone-in 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+  transform-origin: 50% 100%;
+}
+
+/* Rangwechsel-Pfeile */
+@keyframes rank-badge {
+  0% { opacity: 0; transform: translateY(6px) scale(0.6); }
+  15% { opacity: 1; transform: none; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.rank-badge { animation: rank-badge 2.6s ease-out forwards; }
+
+/* Sterne am Nachthimmel */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+.twinkle { animation: twinkle 3s ease-in-out infinite; }
+
+/* Vogelschwarm / Flugzeug quer durchs Bild */
+@keyframes fly-across {
+  from { transform: translateX(-30vw); }
+  to { transform: translateX(130vw); }
+}
+.fly-across { animation: fly-across var(--dur, 26s) linear forwards; }
+@keyframes flap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(-0.4); }
+}
+.flap { transform-box: fill-box; transform-origin: center; animation: flap 0.5s ease-in-out infinite; }
+@keyframes banner-wave {
+  0%, 100% { transform: skewY(0deg); }
+  50% { transform: skewY(-3deg); }
+}
+.banner-wave { transform-box: fill-box; transform-origin: left center; animation: banner-wave 1.2s ease-in-out infinite; }
+
+/* Regen, Blitz, Nebel */
+@keyframes rain-fall {
+  from { transform: translateY(-10vh) translateX(0); }
+  to { transform: translateY(110vh) translateX(-12vh); }
+}
+.raindrop {
+  position: absolute;
+  top: -10vh;
+  width: 1px;
+  height: 9vh;
+  background: linear-gradient(transparent, rgb(200 220 255 / 0.55));
+  transform: rotate(8deg);
+  animation: rain-fall var(--d, 0.8s) linear infinite;
+}
+@keyframes lightning {
+  0%, 100% { opacity: 0; }
+  2% { opacity: 0.85; }
+  4% { opacity: 0.1; }
+  6% { opacity: 0.6; }
+  12% { opacity: 0; }
+}
+.lightning { background: #dfe9ff; mix-blend-mode: overlay; animation: lightning 0.9s ease-out forwards; }
+@keyframes fog-drift {
+  from { transform: translateX(-15%); }
+  to { transform: translateX(15%); }
+}
+.fog {
+  background:
+    radial-gradient(ellipse 40% 18% at 20% 70%, rgb(255 220 240 / 0.18), transparent 70%),
+    radial-gradient(ellipse 35% 15% at 70% 78%, rgb(220 230 255 / 0.16), transparent 70%),
+    radial-gradient(ellipse 50% 20% at 50% 90%, rgb(255 200 230 / 0.2), transparent 70%);
+  animation: fog-drift 40s ease-in-out infinite alternate;
+  filter: blur(6px);
+}
+
+/* Ladebalken */
+@keyframes load-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+.load-bar { animation: load-bar 1.3s ease-in-out infinite; }

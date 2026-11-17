@@ -2,6 +2,9 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState, type
 import { errorMessage } from '../lib/format'
 import NeonToast from '../components/NeonToast'
 import BigBanner from '../components/BigBanner'
+import { sfx } from '../lib/sound'
+import { haptic } from '../lib/haptics'
+import { fx } from '../lib/fx'
 
 export type ToastVariant = 'passed' | 'wasted' | 'info' | 'error'
 export interface Toast {
@@ -31,6 +34,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       // Erfolge und Pech bekommen die große Vollbild-Einblendung
       if (variant === 'passed' || variant === 'wasted') {
         setBanner({ id, variant, title, text })
+        if (variant === 'passed') {
+          sfx.success()
+          haptic.success()
+        } else {
+          sfx.wasted()
+          haptic.wasted()
+          fx.emit({ type: 'shake' })
+        }
         return
       }
       setToasts((t) => [...t.slice(-3), { id, variant, title, text }])

@@ -49,7 +49,7 @@ export default function Crew() {
       ) : (
         <div key={sort} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((m, i) => (
-            <div key={m.profile.id} className="stagger-in" style={{ ['--i' as string]: i }}>
+            <div key={m.profile.id} className="phone-in" style={{ ['--i' as string]: i }}>
               <PlayerCard
                 member={m}
                 rank={i + 1}

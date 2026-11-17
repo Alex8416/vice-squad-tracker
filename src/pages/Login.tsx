@@ -17,7 +17,9 @@ export default function Login() {
       <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 text-center">
         <div className="glass shadow-pink anim-fade-up w-full max-w-md p-8">
           <p className="font-display title-skew anim-title-drop text-6xl text-[#ff3b3b] [text-shadow:0_0_18px_#ff2e88]">
-            {authError.guestList ? 'ACCESS DENIED' : 'LOGIN FEHLGESCHLAGEN'}
+            <span className="glitch glitch-jitter" data-text={authError.guestList ? 'ACCESS DENIED' : 'LOGIN FEHLGESCHLAGEN'}>
+              {authError.guestList ? 'ACCESS DENIED' : 'LOGIN FEHLGESCHLAGEN'}
+            </span>
           </p>
           {authError.guestList ? (
             <>

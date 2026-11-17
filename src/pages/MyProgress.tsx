@@ -6,6 +6,9 @@ import PageTitle from '../components/PageTitle'
 import WantedStars from '../components/WantedStars'
 import ProgressBar from '../components/ProgressBar'
 import { formatMoney } from '../lib/format'
+import { fx } from '../lib/fx'
+import { sfx } from '../lib/sound'
+import { haptic } from '../lib/haptics'
 
 type Form = Omit<Progress, 'user_id' | 'updated_at'>
 
@@ -41,6 +44,31 @@ export default function MyProgress() {
 
   const set = <K extends keyof Form>(key: K, value: Form[K]) => setForm((f) => (f ? { ...f, [key]: value } : f))
 
+  /** Extra-Effekte je nach Sprung: Geldregen, Konfetti, Blaulicht */
+  const effects = (before: Progress, after: Partial<Form>) => {
+    const moneyBefore = Number(before.money)
+    const moneyAfter = after.money ?? moneyBefore
+    const crossedMillion = moneyBefore < 1_000_000 && moneyAfter >= 1_000_000
+    if (moneyAfter > moneyBefore) {
+      window.setTimeout(() => sfx.cash(crossedMillion), 150)
+      if (crossedMillion) fx.emit({ type: 'money', amount: 90 })
+      else if (moneyAfter - moneyBefore >= 100_000) fx.emit({ type: 'money', amount: 25 })
+    }
+    const storyBefore = Number(before.story_percent)
+    const storyAfter = after.story_percent ?? storyBefore
+    if (storyBefore < 100 && storyAfter >= 100) fx.emit({ type: 'confetti', amount: 320 })
+    else if ([25, 50, 75].some((m) => storyBefore < m && storyAfter >= m)) fx.emit({ type: 'confetti', amount: 140 })
+    const starsBefore = before.max_wanted_stars
+    const starsAfter = after.max_wanted_stars ?? starsBefore
+    if (starsAfter > starsBefore) {
+      sfx.siren(starsAfter === 5 ? 3 : 1)
+      if (starsAfter === 5) {
+        fx.emit({ type: 'police' })
+        haptic.siren()
+      }
+    }
+  }
+
   const celebrate = (events: { kind: string; title: string }[] | null, fallback: string) => {
     if (!events) return
     const death = events.find((e) => e.kind === 'death')
@@ -53,6 +81,8 @@ export default function MyProgress() {
   }
 
   const quick = async (key: 'missions_done' | 'wasted_count' | 'busted_count') => {
+    haptic.tap()
+    if (key === 'busted_count') sfx.siren(1)
     const events = await save({ [key]: (progress?.[key] ?? 0) + 1 })
     celebrate(events, 'GESPEICHERT')
   }
@@ -63,12 +93,14 @@ export default function MyProgress() {
       toast.show('error', 'UNGÜLTIG', 'Prozentwerte müssen zwischen 0 und 100 liegen.')
       return
     }
+    const before = progress
     const events = await save({
       ...form,
       current_mission: form.current_mission?.trim() || null,
       status_message: form.status_message?.trim() || null,
     })
     celebrate(events, 'STAND GESPEICHERT')
+    if (events && before) effects(before, form)
   }
 
   return (

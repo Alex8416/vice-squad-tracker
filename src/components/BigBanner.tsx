@@ -15,7 +15,9 @@ export default function BigBanner({ banner, onClose }: { banner: Toast; onClose:
       {wasted ? (
         <div className="px-4 text-center">
           <p className="font-display wasted-text text-7xl text-[#e8152f] [text-shadow:0_4px_0_#000,0_0_24px_#ff2e88] sm:text-9xl">
-            {banner.title}
+            <span className="glitch glitch-jitter" data-text={banner.title}>
+              {banner.title}
+            </span>
           </p>
           {banner.text && <p className="banner-sub mt-4 text-lg font-semibold text-white">{banner.text}</p>}
         </div>

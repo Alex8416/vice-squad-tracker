@@ -5,6 +5,7 @@ import BigBanner from '../components/BigBanner'
 import { sfx } from '../lib/sound'
 import { haptic } from '../lib/haptics'
 import { fx } from '../lib/fx'
+import { duck } from '../lib/radio'
 
 export type ToastVariant = 'passed' | 'wasted' | 'info' | 'error'
 export interface Toast {
@@ -34,6 +35,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       // Erfolge und Pech bekommen die große Vollbild-Einblendung
       if (variant === 'passed' || variant === 'wasted') {
         setBanner({ id, variant, title, text })
+        duck()
         if (variant === 'passed') {
           sfx.success()
           haptic.success()

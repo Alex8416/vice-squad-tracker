@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthProvider'
 import Avatar from './Avatar'
 import { NavLinks } from './Nav'
 import SoundControls from './SoundControls'
+import { NowPlaying, RadioButton, RadioWheel } from './Radio'
 import { useRealtime } from '../hooks/useRealtime'
 import { sfx } from '../lib/sound'
 import { haptic } from '../lib/haptics'
@@ -11,6 +13,7 @@ export default function Layout() {
   const { profile, session, signOut } = useAuth()
   const name = profile?.username ?? session?.user.email ?? '?'
   const location = useLocation()
+  const [radioOpen, setRadioOpen] = useState(false)
 
   // Handy-Ping, wenn jemand anderes aus der Crew etwas ins Feed postet
   useRealtime('progress_events', (payload) => {
@@ -31,6 +34,7 @@ export default function Layout() {
           <NavLinks variant="top" />
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <RadioButton onOpen={() => setRadioOpen(true)} />
           <SoundControls />
           <Link to="/profile" aria-label="Profil">
             <Avatar name={name} color={profile?.avatar_color ?? '#ff2e88'} url={profile?.avatar_url} size={34} />
@@ -49,6 +53,9 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
+
+      <RadioWheel open={radioOpen} onClose={() => setRadioOpen(false)} />
+      <NowPlaying />
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex gap-1 border-t border-white/10 bg-night/85 px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md md:hidden">
         <NavLinks variant="bottom" />

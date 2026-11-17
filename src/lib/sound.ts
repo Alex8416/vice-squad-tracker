@@ -52,7 +52,7 @@ function audio(): AudioContext | null {
 /** Browser erlauben Audio erst nach einer Nutzer-Geste: beim ersten Tippen entsperren. */
 export function unlockAudioOnFirstGesture() {
   const unlock = () => {
-    if (getPrefs().sound || getPrefs().music) audio()
+    if (getPrefs().sound || getPrefs().station) audio()
     window.removeEventListener('pointerdown', unlock)
     window.removeEventListener('keydown', unlock)
   }
@@ -197,13 +197,30 @@ export const sfx = {
 // ---------- Ambient-Synthwave-Loop (Am – F – C – G) ----------
 let musicTimer: number | null = null
 let musicGain: GainNode | null = null
+let musicVolume = 1
+
+/** Lautstärke des Live-Synth-Senders (0–1), z. B. fürs Ducking. */
+export function setMusicVolume(v: number, rampSeconds = 0.3) {
+  musicVolume = v
+  if (ctx && musicGain) {
+    musicGain.gain.cancelScheduledValues(ctx.currentTime)
+    musicGain.gain.setValueAtTime(Math.max(musicGain.gain.value, 0.0001), ctx.currentTime)
+    musicGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, 0.5 * v), ctx.currentTime + rampSeconds)
+  }
+}
+
+/** Radio-Rauschen beim Senderwechsel (läuft auch, wenn Soundeffekte aus sind). */
+export function radioStatic(dur = 0.45) {
+  noise({ dur, vol: 0.16, hp: 600, lp: 4200 })
+  tone({ type: 'sine', f: 2400, fEnd: 600, dur: dur * 0.8, vol: 0.02 })
+}
 
 export function startMusic() {
   const ac = audio()
   if (!ac || !master || musicTimer !== null) return
   musicGain = ac.createGain()
   musicGain.gain.setValueAtTime(0.0001, ac.currentTime)
-  musicGain.gain.exponentialRampToValueAtTime(0.5, ac.currentTime + 2)
+  musicGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, 0.5 * musicVolume), ac.currentTime + 2)
   musicGain.connect(master)
   if (reverb) musicGain.connect(reverb)
 

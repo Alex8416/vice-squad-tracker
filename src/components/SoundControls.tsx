@@ -1,11 +1,10 @@
 import { useEffect } from 'react'
-import { setPrefs, usePrefs } from '../lib/prefs'
-import { sfx, startMusic, stopMusic, unlockAudioOnFirstGesture } from '../lib/sound'
+import { getPrefs, setPrefs, usePrefs } from '../lib/prefs'
+import { sfx, unlockAudioOnFirstGesture } from '../lib/sound'
+import { tune } from '../lib/radio'
 
-/** Globale Sound-Logik: Audio entsperren, Klick-Sounds, Musik an/aus. Einmal in der App einhängen. */
+/** Globale Sound-Logik: Audio entsperren, Klick-Sounds, zuletzt gehörten Sender fortsetzen. */
 export function SoundManager() {
-  const { music } = usePrefs()
-
   useEffect(() => {
     unlockAudioOnFirstGesture()
     const onClick = (e: MouseEvent) => {
@@ -13,54 +12,37 @@ export function SoundManager() {
       if (el && !el.hasAttribute('data-no-click-sound')) sfx.click()
     }
     document.addEventListener('click', onClick, true)
-    return () => document.removeEventListener('click', onClick, true)
-  }, [])
 
-  // Musik startet erst nach einer Geste (Autoplay-Regeln der Browser)
-  useEffect(() => {
-    if (!music) {
-      stopMusic()
-      return
+    // Wie im Auto: Der zuletzt gehörte Sender läuft beim ersten Antippen weiter (Autoplay-Regeln der Browser)
+    const resume = () => {
+      const st = getPrefs().station
+      if (st) tune(st, { quiet: true })
     }
-    const start = () => startMusic()
-    if (navigator.userActivation?.hasBeenActive) start()
-    else {
-      window.addEventListener('pointerdown', start, { once: true })
-      return () => window.removeEventListener('pointerdown', start)
+    if (getPrefs().station) window.addEventListener('pointerdown', resume, { once: true })
+
+    return () => {
+      document.removeEventListener('click', onClick, true)
+      window.removeEventListener('pointerdown', resume)
     }
-    return () => stopMusic()
-  }, [music])
+  }, [])
 
   return null
 }
 
-/** Schalter für Soundeffekte und Hintergrundmusik. */
+/** Schalter für Soundeffekte. */
 export default function SoundControls() {
-  const { sound, music } = usePrefs()
+  const { sound } = usePrefs()
   return (
-    <div className="flex items-center gap-1">
-      <button
-        type="button"
-        data-no-click-sound
-        onClick={() => setPrefs({ sound: !sound })}
-        aria-pressed={sound}
-        aria-label={sound ? 'Soundeffekte aus' : 'Soundeffekte an'}
-        title={sound ? 'Soundeffekte aus' : 'Soundeffekte an'}
-        className={`btn btn-ghost h-9 w-9 p-0 text-base ${sound ? '' : 'opacity-50'}`}
-      >
-        {sound ? '🔊' : '🔇'}
-      </button>
-      <button
-        type="button"
-        data-no-click-sound
-        onClick={() => setPrefs({ music: !music })}
-        aria-pressed={music}
-        aria-label={music ? 'Musik aus' : 'Musik an'}
-        title={music ? 'Musik aus' : 'Synthwave-Musik an'}
-        className={`btn h-9 w-9 p-0 text-base ${music ? 'btn-teal' : 'btn-ghost opacity-60'}`}
-      >
-        🎵
-      </button>
-    </div>
+    <button
+      type="button"
+      data-no-click-sound
+      onClick={() => setPrefs({ sound: !sound })}
+      aria-pressed={sound}
+      aria-label={sound ? 'Soundeffekte aus' : 'Soundeffekte an'}
+      title={sound ? 'Soundeffekte aus' : 'Soundeffekte an'}
+      className={`btn btn-ghost h-9 w-9 p-0 text-base ${sound ? '' : 'opacity-50'}`}
+    >
+      {sound ? '🔊' : '🔇'}
+    </button>
   )
 }

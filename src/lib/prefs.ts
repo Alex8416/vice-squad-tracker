@@ -3,11 +3,14 @@ import { useSyncExternalStore } from 'react'
 // Kleine Geräte-Einstellungen (pro Browser). Alle Zugriffe abgesichert, falls Storage blockiert ist.
 export interface Prefs {
   sound: boolean
-  music: boolean
+  /** Zuletzt gehörter Radiosender (null = Radio aus) */
+  station: string | null
+  /** Radio-Lautstärke 0–1 */
+  volume: number
 }
 
 const KEY = 'vst-prefs'
-const defaults: Prefs = { sound: true, music: false }
+const defaults: Prefs = { sound: true, station: null, volume: 0.8 }
 
 function load(): Prefs {
   try {

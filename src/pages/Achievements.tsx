@@ -47,7 +47,7 @@ export default function Achievements() {
         <p className="text-white/60">Lade Erfolge …</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {achievements.map((a) => {
+          {achievements.map((a, i) => {
             const unlocked = mine?.unlocked.has(a.id) ?? false
             const owners = members.filter((m) => m.unlocked.has(a.id))
             return (
@@ -57,10 +57,13 @@ export default function Achievements() {
                 disabled={busy === a.id}
                 onClick={() => toggle(a)}
                 aria-pressed={unlocked}
-                className={`glass flex flex-col p-4 text-left transition ${unlocked ? 'shadow-pink border-pink/60' : 'opacity-80 hover:opacity-100'}`}
+                style={{ ['--i' as string]: i }}
+                className={`glass lift stagger-in flex flex-col p-4 text-left ${unlocked ? 'shadow-pink border-pink/60' : 'opacity-80 hover:opacity-100'}`}
               >
                 <div className="flex items-start gap-3">
-                  <span className={`text-4xl ${unlocked ? '' : 'grayscale'}`}>{a.icon ?? '⭐'}</span>
+                  <span key={String(unlocked)} className={`text-4xl ${unlocked ? 'star-pop' : 'grayscale'}`}>
+                    {a.icon ?? '⭐'}
+                  </span>
                   <div className="min-w-0 flex-1">
                     <p className="font-display text-xl leading-tight">{a.title}</p>
                     {a.description && <p className="text-sm text-white/70">{a.description}</p>}

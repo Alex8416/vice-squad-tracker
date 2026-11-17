@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 import { errorMessage } from '../lib/format'
 import NeonToast from '../components/NeonToast'
+import BigBanner from '../components/BigBanner'
 
 export type ToastVariant = 'passed' | 'wasted' | 'info' | 'error'
 export interface Toast {
@@ -19,6 +20,7 @@ const ToastContext = createContext<ToastApi | null>(null)
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
+  const [banner, setBanner] = useState<Toast | null>(null)
   const nextId = useRef(1)
 
   const dismiss = useCallback((id: number) => setToasts((t) => t.filter((x) => x.id !== id)), [])
@@ -26,6 +28,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const show = useCallback(
     (variant: ToastVariant, title: string, text?: string) => {
       const id = nextId.current++
+      // Erfolge und Pech bekommen die große Vollbild-Einblendung
+      if (variant === 'passed' || variant === 'wasted') {
+        setBanner({ id, variant, title, text })
+        return
+      }
       setToasts((t) => [...t.slice(-3), { id, variant, title, text }])
       window.setTimeout(() => dismiss(id), variant === 'error' ? 6000 : 3500)
     },
@@ -45,6 +52,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
+      {banner && <BigBanner key={banner.id} banner={banner} onClose={() => setBanner((b) => (b?.id === banner.id ? null : b))} />}
       <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex flex-col items-center gap-3 px-4" aria-live="polite">
         {toasts.map((t) => (
           <NeonToast key={t.id} toast={t} onClose={() => dismiss(t.id)} />

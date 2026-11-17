@@ -4,8 +4,14 @@ export default function PageTitle({ children, sub, right }: { children: ReactNod
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="font-display title-skew neon-pink text-4xl sm:text-5xl">{children}</h1>
-        {sub && <p className="mt-1 text-sm text-white/70">{sub}</p>}
+        <h1 className="font-display title-skew neon-pink text-4xl sm:text-5xl">
+          <span className="title-wipe inline-block">{children}</span>
+        </h1>
+        {sub && (
+          <p className="anim-fade-up mt-1 text-sm text-white/70" style={{ animationDelay: '0.25s' }}>
+            {sub}
+          </p>
+        )}
       </div>
       {right}
     </div>

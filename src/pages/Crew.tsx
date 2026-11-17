@@ -47,15 +47,16 @@ export default function Crew() {
       ) : sorted.length === 0 ? (
         <p className="text-white/60">Noch niemand hier.</p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div key={sort} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((m, i) => (
-            <PlayerCard
-              key={m.profile.id}
-              member={m}
-              rank={i + 1}
-              flashKey={flash[m.profile.id] ?? 0}
-              isMe={m.profile.id === session?.user.id}
-            />
+            <div key={m.profile.id} className="stagger-in" style={{ ['--i' as string]: i }}>
+              <PlayerCard
+                member={m}
+                rank={i + 1}
+                flashKey={flash[m.profile.id] ?? 0}
+                isMe={m.profile.id === session?.user.id}
+              />
+            </div>
           ))}
         </div>
       )}

@@ -1,5 +1,6 @@
 import type { CrewMember } from '../hooks/useCrew'
 import { formatHours, formatMoney, formatNumber, timeAgo } from '../lib/format'
+import { useCountUp } from '../hooks/useCountUp'
 import Avatar from './Avatar'
 import ProgressBar from './ProgressBar'
 import WantedStars from './WantedStars'
@@ -14,11 +15,13 @@ interface Props {
 export default function PlayerCard({ member, rank, flashKey, isMe }: Props) {
   const { profile, progress: p, points } = member
   const color = profile.avatar_color
+  const money = useCountUp(Number(p?.money ?? 0), 1200)
+  const pointsAnim = useCountUp(points)
 
   return (
     <article
       key={flashKey}
-      className={`glass relative overflow-hidden p-4 ${flashKey ? 'neon-flash' : ''}`}
+      className={`glass lift relative overflow-hidden p-4 ${flashKey ? 'neon-flash' : ''}`}
       style={{ boxShadow: `6px 6px 0 ${color}` }}
     >
       {/* Handy-Statusleiste */}
@@ -42,10 +45,10 @@ export default function PlayerCard({ member, rank, flashKey, isMe }: Props) {
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
-        <Stat label="Geld" value={formatMoney(p?.money ?? 0)} accent="text-[#7dffb0]" />
+        <Stat label="Geld" value={formatMoney(Math.round(money))} accent="text-[#7dffb0]" />
         <Stat label="Missionen" value={formatNumber(p?.missions_done ?? 0)} />
         <Stat label="Spielzeit" value={formatHours(p?.playtime_hours ?? 0)} />
-        <Stat label="Punkte" value={`${points} P`} accent="text-sun" />
+        <Stat label="Punkte" value={`${Math.round(pointsAnim)} P`} accent="text-sun" />
       </dl>
 
       <div className="mt-3 flex items-center justify-between">

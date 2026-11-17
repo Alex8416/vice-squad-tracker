@@ -56,11 +56,15 @@ export default function Leaderboard() {
       {loading ? (
         <p className="text-white/60">Lade Ranking …</p>
       ) : (
-        <ol className="space-y-3">
+        <ol key={sort} className="space-y-3">
           {sorted.map((r, i) => {
             const pod = podium[i]
             return (
-              <li key={r.id} className={`glass flex items-center gap-3 border-2 p-3 ${pod ? pod.cls : 'border-transparent'}`}>
+              <li
+                key={r.id}
+                className={`glass stagger-in flex items-center gap-3 border-2 p-3 ${pod ? `podium-shine ${pod.cls}` : 'border-transparent'}`}
+                style={{ ['--i' as string]: i }}
+              >
                 <span
                   className="font-display w-10 text-center text-3xl"
                   style={pod ? { color: pod.color, textShadow: `0 0 12px ${pod.color}` } : { color: '#ffffff88' }}

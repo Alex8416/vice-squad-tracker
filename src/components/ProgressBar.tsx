@@ -10,7 +10,7 @@ export default function ProgressBar({ value, color = '#ff2e88', label }: { value
       )}
       <div className="h-3 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow={v} aria-valuemin={0} aria-valuemax={100}>
         <div
-          className="h-full rounded-full transition-[width] duration-700"
+          className="bar-grow shimmer h-full rounded-full transition-[width] duration-700"
           style={{ width: `${v}%`, background: `linear-gradient(90deg, ${color}, #ffd23f)`, boxShadow: `0 0 12px ${color}` }}
         />
       </div>

@@ -71,14 +71,14 @@ export default function Feed() {
         <p className="text-white/60">Noch nichts passiert. Trag deinen Fortschritt ein!</p>
       ) : (
         <ul className="space-y-3">
-          {events.map((ev) => {
+          {events.map((ev, idx) => {
             const p = profiles[ev.user_id]
             const k = kindStyle[ev.kind] ?? kindStyle.note
             return (
               <li
                 key={ev.id}
-                className={`glass flex gap-3 border-l-4 p-3 ${fresh.has(ev.id) ? 'toast-in neon-flash' : ''}`}
-                style={{ borderLeftColor: k.color }}
+                className={`glass flex gap-3 border-l-4 p-3 ${fresh.has(ev.id) ? 'notif-in neon-flash' : 'stagger-in'}`}
+                style={{ borderLeftColor: k.color, ['--i' as string]: Math.min(idx, 12) }}
               >
                 <Avatar name={p?.username ?? '?'} color={p?.avatar_color ?? '#888'} url={p?.avatar_url} size={40} />
                 <div className="min-w-0 flex-1">

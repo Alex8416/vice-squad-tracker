@@ -133,6 +133,177 @@ body {
 }
 .sun-pulse { animation: sun-pulse 6s ease-in-out infinite; }
 
+/* ===================== Animationen (eigener Vice-Stil) ===================== */
+
+/* Titel fällt mit Unschärfe und Überschwinger ins Bild */
+@keyframes title-drop {
+  0% { opacity: 0; transform: skew(-8deg) rotate(-2deg) translateY(-50px) scale(1.35); filter: blur(8px); }
+  60% { opacity: 1; filter: blur(0); transform: skew(-8deg) rotate(-2deg) translateY(4px) scale(0.98); }
+  100% { opacity: 1; transform: skew(-8deg) rotate(-2deg); }
+}
+.anim-title-drop { animation: title-drop 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.1) both; }
+
+/* Neonröhre, die gelegentlich flackert */
+@keyframes neon-flicker {
+  0%, 18%, 22%, 52%, 56%, 100% { opacity: 1; }
+  19%, 21%, 53%, 55% { opacity: 0.4; }
+}
+.neon-flicker { animation: neon-flicker 5s linear infinite; }
+
+/* Einblenden von unten */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.anim-fade-up { animation: fade-up 0.6s ease-out both; }
+
+/* Seitenwechsel: schräger Wisch von rechts */
+@keyframes page-in {
+  from { opacity: 0; transform: translateX(32px) skewX(-5deg); filter: blur(3px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.page-enter { animation: page-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* Seitentitel: Wisch-Balken hinter dem Text */
+@keyframes title-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.title-wipe { animation: title-wipe 0.55s cubic-bezier(0.7, 0, 0.2, 1) both; }
+
+/* Charakterauswahl: Karten nacheinander einfliegen lassen */
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(36px) skewY(3deg) scale(0.95); }
+  to { opacity: 1; transform: none; }
+}
+.stagger-in {
+  animation: card-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* Karten heben sich beim Hovern leicht ab */
+.lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+@media (hover: hover) {
+  .lift:hover { transform: translate(-3px, -3px) rotate(-0.4deg); }
+}
+
+/* Handy-Benachrichtigung: von rechts reinschieben */
+@keyframes notif-in {
+  0% { opacity: 0; transform: translateX(110%); }
+  70% { opacity: 1; transform: translateX(-6px); }
+  100% { transform: none; }
+}
+.notif-in { animation: notif-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* Fortschrittsbalken wächst von 0 und hat einen Lichtreflex */
+@keyframes bar-grow { from { width: 0; } }
+.bar-grow { animation: bar-grow 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+.shimmer { position: relative; overflow: hidden; }
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.55), transparent);
+  animation: shimmer 2.8s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+/* Fahndungssterne: Blaulicht-Blinken bei Änderung */
+@keyframes wanted-blink {
+  0%, 100% { color: #ffd23f; text-shadow: 0 0 10px #ff8a3d; }
+  25% { color: #ff2e88; text-shadow: 0 0 14px #ff2e88; }
+  50% { color: #ffffff; text-shadow: 0 0 6px #fff; }
+  75% { color: #00e5d4; text-shadow: 0 0 14px #00e5d4; }
+}
+.wanted-blink .star-on { animation: star-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3) both, wanted-blink 0.5s steps(1) 0.45s 4; }
+@keyframes star-pop {
+  0% { transform: scale(0.4) rotate(-40deg); }
+  60% { transform: scale(1.45) rotate(10deg); }
+  100% { transform: none; }
+}
+.star-pop { display: inline-block; animation: star-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+
+/* Podium: Glanz-Wisch über Platz 1–3 */
+@keyframes podium-shine {
+  0%, 70% { transform: translateX(-120%) skewX(-20deg); }
+  100% { transform: translateX(320%) skewX(-20deg); }
+}
+.podium-shine { position: relative; overflow: hidden; }
+.podium-shine::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.18), transparent);
+  animation: podium-shine 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Hintergrund: Sonne geht auf, Palmen wiegen, Meer glitzert */
+@keyframes sun-rise {
+  from { transform: translateY(140px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.sun-rise { animation: sun-rise 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes palm-sway {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.8deg); }
+}
+.palm-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: palm-sway 7s ease-in-out infinite;
+}
+@keyframes sea-glint {
+  0%, 100% { opacity: 0.15; transform: translateX(-8px); }
+  50% { opacity: 0.65; transform: translateX(8px); }
+}
+.sea-glint { animation: sea-glint 4s ease-in-out infinite; }
+@keyframes scan-drift {
+  from { background-position: 0 0; }
+  to { background-position: 0 6px; }
+}
+.scanlines { animation: scan-drift 0.6s linear infinite; }
+
+/* ---------- Vollbild-Banner („Job erledigt“ / „Wasted“) ---------- */
+@keyframes banner-in {
+  0% { opacity: 0; transform: scaleY(0); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+@keyframes banner-out {
+  to { opacity: 0; }
+}
+.banner-wrap { animation: banner-out 0.45s ease-in forwards; animation-delay: var(--out, 2.6s); }
+.banner-band { animation: banner-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: center; }
+@keyframes banner-text {
+  0% { opacity: 0; letter-spacing: 0.6em; filter: blur(6px); }
+  100% { opacity: 1; letter-spacing: 0.04em; filter: blur(0); }
+}
+.banner-text { animation: banner-text 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.12s both; }
+@keyframes banner-sub {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.banner-sub { animation: banner-sub 0.4s ease-out 0.6s both; }
+
+/* Wasted: Bild wird grau, Text zoomt langsam ran */
+@keyframes wasted-fade {
+  from { backdrop-filter: grayscale(0) contrast(1); -webkit-backdrop-filter: grayscale(0) contrast(1); background: transparent; }
+  to { backdrop-filter: grayscale(1) contrast(1.15) brightness(0.8); -webkit-backdrop-filter: grayscale(1) contrast(1.15) brightness(0.8); background: rgb(40 0 10 / 0.35); }
+}
+.wasted-overlay { animation: wasted-fade 0.8s ease-out both; }
+@keyframes wasted-zoom {
+  0% { opacity: 0; transform: scale(1.6); filter: blur(10px); }
+  40% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.wasted-text { animation: wasted-zoom 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;

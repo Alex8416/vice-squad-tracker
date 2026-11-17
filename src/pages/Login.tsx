@@ -15,8 +15,8 @@ export default function Login() {
   if (authError) {
     return (
       <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 text-center">
-        <div className="glass shadow-pink w-full max-w-md p-8">
-          <p className="font-display title-skew text-6xl text-[#ff3b3b] [text-shadow:0_0_18px_#ff2e88]">
+        <div className="glass shadow-pink anim-fade-up w-full max-w-md p-8">
+          <p className="font-display title-skew anim-title-drop text-6xl text-[#ff3b3b] [text-shadow:0_0_18px_#ff2e88]">
             {authError.guestList ? 'ACCESS DENIED' : 'LOGIN FEHLGESCHLAGEN'}
           </p>
           {authError.guestList ? (
@@ -41,14 +41,24 @@ export default function Login() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-between px-4 pt-[14vh] pb-[12vh] text-center">
       <div>
-        <p className="font-display neon-teal text-lg tracking-[0.4em]">Leonida Crew Network</p>
-        <h1 className="font-display title-skew mt-2 text-7xl leading-[0.85] sm:text-8xl">
+        <p className="font-display neon-teal anim-fade-up text-lg tracking-[0.4em]" style={{ animationDelay: '0.9s' }}>
+          Leonida Crew Network
+        </p>
+        <h1 className="font-display title-skew anim-title-drop mt-2 text-7xl leading-[0.85] sm:text-8xl" style={{ animationDelay: '0.3s' }}>
           <span className="sunset-text block">VICE SQUAD</span>
-          <span className="neon-pink block">TRACKER</span>
+          <span className="neon-pink neon-flicker block">TRACKER</span>
         </h1>
-        <p className="mx-auto mt-6 max-w-xs text-white/80">Story, Kohle, Wanted-Level: Wer aus der Crew ist vorne?</p>
+        <p className="anim-fade-up mx-auto mt-6 max-w-xs text-white/80" style={{ animationDelay: '1.1s' }}>
+          Story, Kohle, Wanted-Level: Wer aus der Crew ist vorne?
+        </p>
       </div>
-      <button type="button" onClick={login} disabled={busy} className="btn btn-pink px-6 py-4 text-lg">
+      <button
+        type="button"
+        onClick={login}
+        disabled={busy}
+        className="btn btn-pink anim-fade-up px-6 py-4 text-lg"
+        style={{ animationDelay: '1.4s' }}
+      >
         <span className="grid place-items-center rounded-full bg-white p-1">
           <GoogleIcon />
         </span>
